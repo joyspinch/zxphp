@@ -1,0 +1,249 @@
+<div class="layui-tab layui-tab-brief" id="<?php echo $__PRE__ ?>_tabs" lay-filter="<?php echo $__PRE__ ?>_tabs">
+	<ul class="layui-tab-title"></ul>
+	<div class="layui-tab-content" style="padding:10px 0">
+		<div id="<?php echo $__PRE__ ?>_content" lay-filter="<?php echo $__PRE__ ?>_content"></div>
+	</div>
+</div>
+
+
+<script type="text/html" id="<?php echo $__PRE__ ?>toolbar">
+	<div class="layui-btn-container">
+		<button class="layui-btn layui-btn-sm layui-btn-primary" lay-event="add">＋更新数据</button>
+
+	</div>
+</script>
+
+
+<script id="demo" type="text/html">
+	<div class="layui-row layui-col-space10">
+		<div class="layui-col-md6">
+			<div id="app">
+				{{ message }}
+			</div>
+			<pre class="layui-code" lay-title="Controller"> </pre>
+			<pre class="layui-code" lay-title="View"> </pre>
+		</div>
+		<div class="layui-col-md6">
+
+			<form class="layui-form" action="">
+				<div class="layui-form-item">
+					<label class="layui-form-label">输入框</label>
+					<div class="layui-input-block">
+						<input type="text" name="title" required lay-verify="required" placeholder="请输入标题"
+							   autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">密码框</label>
+					<div class="layui-input-inline">
+						<input type="password" name="password" required lay-verify="required" placeholder="请输入密码"
+							   autocomplete="off" class="layui-input">
+					</div>
+					<div class="layui-form-mid layui-word-aux">辅助文字</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">选择框</label>
+					<div class="layui-input-block">
+						<select name="city" lay-verify="required">
+							<option value=""></option>
+							<option value="0">北京</option>
+							<option value="1">上海</option>
+							<option value="2">广州</option>
+							<option value="3">深圳</option>
+							<option value="4">杭州</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">复选框</label>
+					<div class="layui-input-block">
+						<input type="checkbox" name="like[write]" title="写作">
+						<input type="checkbox" name="like[read]" title="阅读" checked>
+						<input type="checkbox" name="like[dai]" title="发呆">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">开关</label>
+					<div class="layui-input-block">
+						<input type="checkbox" name="switch" lay-skin="switch">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">单选框</label>
+					<div class="layui-input-block">
+						<input type="radio" name="sex" value="男" title="男">
+						<input type="radio" name="sex" value="女" title="女" checked>
+					</div>
+				</div>
+				<div class="layui-form-item layui-form-text">
+					<label class="layui-form-label">文本域</label>
+					<div class="layui-input-block">
+						<textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+						<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+					</div>
+				</div>
+			</form>
+
+		</div>
+	</div>
+</script>
+
+
+<script>
+
+    function <?php echo $__PRE__ ?>_get_node(jdiv, new_data) {
+        $.xget('../../<?=$__DIR__?>/menu/index', function (e) {
+            var parent_node_op = '<option value=""></option>';
+            for (key in e.data) {
+                if (((e.data[key].spl).split('├')).length < 3) {
+                    parent_node_op += '<option value="' + e.data[key].node + '">' + e.data[key].spl + e.data[key].name + ' [' + e.data[key].node + ']</option>';
+                }
+            }
+            $('#<?php echo $__PRE__ ?>_parent_node').html(parent_node_op);
+            if (jdiv != "") {
+                form.val(jdiv, new_data);
+            }
+            form.render();
+        })
+    }
+
+    var _module = <?php echo xn_json_encode($_ENV['Module'])?>;
+    var module_op = '<option value=""></option>';
+    for (var _key in _module) {
+        element.tabAdd('<?php echo $__PRE__?>_tabs', {
+            title: _module[_key]
+            , content: ''
+            , id: _key
+        });
+        module_op += '<option value="' + _key + '">' + _module[_key] + ' [' + _key + ']</option>'
+    }
+    element.tabChange('<?php echo $__PRE__?>_tabs', _key);
+
+    table.on('toolbar(<?php echo $__PRE__ ?>_content)', function (obj) {
+        var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+        switch (obj.event) {
+            case 'add':
+                $.xget('../../<?=$__DIR__?>/menu/reload', function (e) {
+                    if (e.resp_code == '0000') {
+                        layer.msg(e.msg);
+                    } else {
+                        layer.msg(e.msg);
+                    }
+                });
+                break;
+        }
+    });
+    var <?php echo $__PRE__ ?>_table = table.render({
+        elem: '#<?php echo $__PRE__ ?>_content'
+        , url: '../../<?=$__DIR__?>/menu/index?module=' + _key
+        , page: false
+        , toolbar: '#<?php echo $__PRE__ ?>toolbar'
+        , cols: [[ //表头
+            {field: 'rank', title: '排序', width: 60, align: 'center', edit: true}
+            , {
+                field: 'node', title: '节点', width: 450, templet: function (d) {
+                    return d.spl + d.node;
+                }
+            }
+            , {field: 'name', title: '名称', width: 150, edit: true}
+            , {field: 'method', title: '请求', width: 80}
+            , {
+                field: 'is_menu',
+                title: '菜单',
+                width: 60,
+                align: 'center',
+                templet: function (d) {
+                    return '<input value='+d.node+'|'+d.method+' lay-filter="<?php echo $__PRE__ ?>is_menu" name="is_menu" type="checkbox" lay-skin="switch" lay-text="是|否"  ' + (d.is_menu == 1 ? 'checked' : '') + ' }}>'
+                }
+            }
+            , {
+                field: 'is_login',
+                title: '登陆',
+                width: 60,
+                align: 'center',
+                templet: function (d) {
+                    return '<input type="checkbox" disabled lay-skin="switch" lay-text="是|否"  ' + (d.is_login == 1 ? 'checked' : '') + ' }}>'
+                }
+            }
+            , {
+                field: 'is_auth',
+                title: '鉴权',
+                width: 60,
+                align: 'center',
+                templet: function (d) {
+                    return '<input type="checkbox" disabled lay-skin="switch" lay-text="是|否"  ' + (d.is_auth == 1 ? 'checked' : '') + ' }}>'
+                }
+            }, {
+                field: 'is_button',
+                title: '按钮',
+                width: 60,
+                align: 'center',
+                templet: function (d) {
+                    return '<input type="checkbox" disabled lay-skin="switch" lay-text="是|否"  ' + (d.is_button == 1 ? 'checked' : '') + ' }}>'
+                }
+            }, {
+                field: 'delete',
+                title: '删除',
+                width: 60,
+                align: 'center',
+                templet: function (d) {
+                    return '<input type="checkbox" disabled lay-skin="switch" lay-text="是|否"  ' + (d.is_button == 1 ? 'checked' : '') + ' }}>'
+                }
+            }
+        ]],
+        response: {
+            statusCode: "0000"
+        }
+        , parseData: function (res) {
+            return {
+                "code": res.resp_code,
+                "msg": res.msg,
+                "data": res.data
+            };
+        }
+    });
+    form.on('switch(<?php echo $__PRE__ ?>is_menu)', function(obj){
+        var is_menu = obj.elem.checked==true?1:0;
+        $.xpost('../../<?=$__DIR__?>/menu/edit',{node:this.value,field:this.name,value:is_menu}, function (e) {
+            if (e.resp_code == '0000') {
+                layer.tips(e.msg, obj.othis);
+            } else {
+                layer.tips(e.msg, obj.othis);
+            }
+        });
+    });
+
+    table.on('edit(<?php echo $__PRE__ ?>_content)', function(obj){ //注：edit是固定事件名，test是table原始容器的属性 lay-filter="对应的值"
+        console.log(obj.value); //得到修改后的值
+        console.log(obj.field); //当前编辑的字段名
+        console.log(obj.data); //所在行的所有相关数据
+		var old_value = obj.data.value;
+        $.xpost('../../<?=$__DIR__?>/menu/edit',{node:obj.data.node+"|"+obj.data.method,field:obj.field,value:obj.value}, function (e) {
+            if (e.resp_code == '0000') {
+                layer.msg(e.msg);
+            } else {
+                layer.msg(e.msg,{icon:3});
+            }
+        });
+
+    });
+
+
+    table.on('rowDouble(<?php echo $__PRE__ ?>_content)', function(obj){
+        layer.confirm('是否确认本行', {icon: 3, title:'删除确认'}, function(index){
+            layer.close(index);
+        });
+    });
+
+    element.on('tab(<?php echo $__PRE__?>_tabs)', function (data) {
+        var me = $(this);
+		<?php echo $__PRE__ ?>_table.reload({
+            url: '../../<?=$__DIR__?>/menu?module=' + me.attr('lay-id')
+        });
+    });
+</script>

@@ -1,0 +1,166 @@
+<div class="layui-row layui-col-space10">
+
+    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header">Api接口请求&nbsp;&nbsp;&nbsp;&nbsp;请求次数：<span id="api_count"></span>&nbsp;&nbsp;总耗时：<span id="api_ms"></span>&nbsp;&nbsp;平均耗时：<span id="api_ms_p"></span></div>
+            <div class="layui-card-body layui-text">
+                <table id="<?php echo $__PRE__?>table_1" lay-filter="<?php echo $__PRE__?>table_1" ></table>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                Api接口请求时段
+                <form class="layui-form"  method="GET" lay-size="sm" style="float:right">
+                    <div class="layui-inline">
+                        <input type="text" class="layui-input" id="<?php echo $__PRE__?>input_1" placeholder="yyyy-MM-dd">
+                    </div>
+                </form></div>
+            <div class="layui-card-body layui-text">
+                <table id="<?php echo $__PRE__?>table_2" lay-filter="<?php echo $__PRE__?>table_2" ></table>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                请求处理 W->worker M->task
+            </div>
+            <div class="layui-card-body layui-text">
+                <div id="<?php echo $__PRE__?>worker" style="height:220px;width:100%"></div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                内存变化
+            </div>
+            <div class="layui-card-body layui-text">
+                <div id="<?php echo $__PRE__?>memory_get_usage" style="height:220px;width:100%;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                系统负载
+            </div>
+            <div class="layui-card-body layui-text">
+                <div id="<?php echo $__PRE__?>sys_get_usage" style="height:220px;width:100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $.get('../../<?=$__DIR__?>/other/working',function (e) {
+        laydate.render({
+            elem: '#<?php echo $__PRE__?>input_1'
+            ,showBottom: false
+            ,min: e.data.server.min
+            ,max: e.data.server.max
+            ,value:e.data.server.today
+            ,done: function(value, date){
+                load_working(value);
+            }
+        });
+    });
+    function load_working(value) {
+        $.get('../../<?=$__DIR__?>/other/stat?time='+value,function (e) {
+            if(e.resp_code=="0000") {
+                var ms=e.data.api_count.ms/10000;
+                $('#api_count').text(toThousands(e.data.api_count.count));
+                $('#api_ms').text(ms.toFixed(5)+'S');
+                $('#api_ms_p').text((ms/e.data.api_count.count).toFixed(5)+'S');
+
+                table.render({
+                    elem: '#<?php echo $__PRE__?>table_1'
+                    ,size:'sm'
+                    ,height: '350'
+                    ,skin: 'line'
+                    ,even: true
+                    ,page: false
+                    ,initSort: {field:'count', type:'desc'}
+                    ,limit: 1000
+                    ,cols: [[
+                        {field: 'api', title: '请求接口'}
+                        ,{field: 'count', title: '请求次数',width:100,sort:true}
+                        ,{field: 'ms', title: '总耗时(S)',width:100,sort:true}
+                        ,{field: 'msp', title: '均耗时(S)',width:100,sort:true}
+                    ]],data:e.data.api_ms
+                });
+
+                table.render({
+                    elem: '#<?php echo $__PRE__?>table_2'
+                    ,size:'sm'
+                    ,skin: 'line'
+                    ,height: '350'
+                    ,even: true
+                    ,page: false
+                    ,limit: 1000
+                    ,cols: [[
+                        {field: 'h', title: '请求时间'}
+                        ,{field: 'count', title: '请求次数',width:100,sort:true}
+                        ,{field: 'ms', title: '总耗时(S)',width:100,sort:true}
+                        ,{field: 'msp', title: '均耗时(S)',width:100,sort:true}
+                    ]],data:e.data.api_m_count
+                });
+                var memory_get_usage = {
+                    tooltip: {
+                        trigger: 'axis',
+                        formatter: function(params){
+                            return  "记录时间："+params[0]['name']+"<br/>物理内存："+bytesToSize(params[0]['data']);}
+                    },
+                    grid: {top: 5, left: 80, right: 10, bottom: 20},
+                    xAxis: {
+                        type: 'category', data: e.data.worker_data
+                    },
+                    yAxis: {type: 'value',
+                        axisLabel: {
+                            formatter: function(params){return bytesToSize(params);}
+                        }},
+                    series: [
+                        {
+                            type:'line',smooth: true, data: arr_list_key(e.data.count,'memory')
+                        }
+                    ]
+                };
+                echarts.init(document.getElementById('<?php echo $__PRE__?>memory_get_usage')).setOption(memory_get_usage);
+
+                var worker = {
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    grid: {top: 5, left: 80, right: 10, bottom: 20},
+                    xAxis: {
+                        type: 'category', data: e.data.worker_data
+                    },
+                    yAxis: {type: 'value'},
+                    series: e.data.worker
+                };
+                echarts.init(document.getElementById('<?php echo $__PRE__?>worker')).setOption(worker);
+
+
+                var sys_get_usage = {
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    grid: {top: 5, left: 80, right: 10, bottom: 20},
+                    xAxis: {
+                        type: 'category', data: e.data.sys_data
+                    },
+                    yAxis: {type: 'value'},
+                    series: e.data.sys
+                };
+                echarts.init(document.getElementById('<?php echo $__PRE__?>sys_get_usage')).setOption(sys_get_usage);
+            }
+        });
+    };
+    load_working('');
+    form.render();
+</script>

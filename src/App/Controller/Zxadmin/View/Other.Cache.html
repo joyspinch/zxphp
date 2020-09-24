@@ -1,0 +1,29 @@
+
+<form class="layui-form" action="../../<?=$__DIR__?>/other/cache">
+    <div class="layui-form-item">
+        <label class="layui-form-label">清理项目</label>
+        <div class="layui-input-block">
+            <input type="checkbox" value="1" name="tmp_clear" title="文件缓存 <?php echo humansize( dirSize(__LOGDIR__));?>" checked>
+            <input type="checkbox" value="1" name="redis_clear" title="Redis缓存" disabled>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">进程重载</label>
+        <div class="layui-input-block">
+            <input type="radio" value="0" name="worker_reload" title="不重载" checked>
+            <input type="radio" value="2" name="worker_reload" title="所有进程">
+            <input type="radio" value="1" name="worker_reload" title="仅Task进程">
+        </div>
+        <div class="layui-form-mid layui-word-aux">请勿频繁操作</div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="*">立即清理</button>
+        </div>
+    </div>
+</form>
+<script>
+    form.render();
+</script>

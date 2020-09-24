@@ -1,0 +1,210 @@
+<table class="layui-table" lay-size="sm">
+	<colgroup>
+		<col width="200">
+		<col>
+	</colgroup>
+	<thead>
+	<tr>
+		<th>描述</th>
+		<th>配置</th>
+	</tr>
+	</thead>
+	<tbody>
+
+	<tr>
+		<td>在线客户端</td>
+		<td>
+			<?php echo count($this->http_server->connections) ?>
+			/ <?php echo $this->http_server->setting['max_connection'] ?>
+		</td>
+	</tr>
+	<tr>
+		<td>监听</td>
+		<td>
+			<?php echo $this->http_server->host ?>:<?php echo $this->http_server->port ?>
+		</td>
+	</tr>
+	<tr>
+		<td>master_pid</td>
+		<td>
+			<?php echo $this->http_server->master_pid ?>
+		</td>
+	</tr>
+	<tr>
+		<td>manager_pid</td>
+		<td>
+			<?php echo $this->http_server->manager_pid ?>
+		</td>
+	</tr>
+	<tr>
+		<td>服务日志</td>
+		<td>
+			<?php echo $this->http_server->setting['log_file'], ' (', humansize(filesize($this->http_server->setting['log_file'])), ')' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>代码目录</td>
+		<td>
+			<?php echo __APPDIR__, ' (', humansize(dirSize(__APPDIR__)), ')' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>Tmp日志</td>
+		<td>
+			<?php echo __TMPDIR__, ' (', humansize(filesize(__TMPDIR__)), ')' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>日志目录</td>
+		<td>
+			<?php echo __LOGDIR__, ' (', humansize(dirSize(__LOGDIR__)), ')' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>缓存目录</td>
+		<td>
+			<?php echo __CAHDIR__, ' (', humansize(dirSize(__CAHDIR__)), ')' ?>
+		</td>
+	</tr>
+<!--	<tr>-->
+<!--		<td>上传目录</td>-->
+<!--		<td>-->
+<!--			--><?php //echo $this->http_server->setting['upload_tmp_dir'], ' (', humansize(dirSize($this->http_server->setting['upload_tmp_dir'])), ')' ?>
+<!--		</td>-->
+<!--	</tr>-->
+	<tr>
+		<td>静态目录</td>
+		<td>
+			<?php echo $this->http_server->setting['document_root'], ' (', humansize(dirSize($this->http_server->setting['document_root'])), ')' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>VEN目录</td>
+		<td>
+			<?php echo __VENDIR__, ' (', humansize(dirSize(__VENDIR__)), ')' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>根目录</td>
+		<td>
+			<?php echo __ROTDIR__, ' (', humansize(dirSize(__ROTDIR__)), ')' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>协程开关</td>
+		<td>
+			Worker:<?php echo $this->http_server->setting['enable_coroutine'] ? 'Open' : 'Close' ?>
+			Task:<?php echo $this->http_server->setting['task_enable_coroutine'] ? 'Open' : 'Close' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>最大协程</td>
+		<td>
+			<?php echo $this->http_server->setting['max_coroutine'] ?>
+		</td>
+	</tr>
+	<tr>
+		<td>HTTP协议</td>
+		<td>
+			<?php echo $this->http_server->setting['open_http_protocol'] ? 'true' : 'false' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>WS协议</td>
+		<td>
+			<?php echo $this->http_server->setting['open_websocket_protocol'] ? 'true' : 'false' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>MQTT协议</td>
+		<td>
+			<?php echo $this->http_server->setting['open_mqtt_protocol'] ? 'true' : 'false' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>输出限制</td>
+		<td>
+			<?php echo humansize($this->http_server->setting['buffer_output_size']) ?>
+		</td>
+	</tr>
+	<tr>
+		<td>上传限制</td>
+		<td>
+			<?php echo humansize($this->http_server->setting['package_max_length']) ?>
+		</td>
+	</tr>
+	<tr>
+		<td>守护模式</td>
+		<td>
+			<?php echo $this->http_server->setting['daemonize'] ? 'true' : 'false' ?>
+		</td>
+	</tr>
+	<tr>
+		<td>worker_num</td>
+		<td>
+			<?php echo $this->http_server->setting['worker_num'] ?>
+		</td>
+	</tr>
+	<tr>
+		<td>task_worker_num</td>
+		<td>
+			<?php echo $this->http_server->setting['task_worker_num'] ?>
+		</td>
+	</tr>
+
+
+	<tr>
+		<td>磁盘空间</td>
+		<td style="padding:0">
+			<table class="layui-table" lay-even lay-skin="nob" style="margin:0">
+				<tr>
+					<td>/</td>
+					<td><?php echo humansize(disk_free_space('/')), '/', humansize(disk_total_space('/'));?></td>
+				</tr>
+				<?php if(is_dir('/www')){ echo "<tr><td>/www</td><td>",humansize(disk_free_space('/www')), '/', humansize(disk_total_space('/www')),'</td></tr>';}?>
+			</table>
+		</td>
+	</tr>
+	<?php /** foreach ($_ENV['table'] as $k => $row) { ?>
+	 * <?php if(!$row instanceof swoole_table){ ?>
+	 *
+	 * <tr>
+	 * <td><?=$k?></td>
+	 * <td><?php var_dump($row)?></td>
+	 * </tr>
+	 *
+	 * <?php } ?>
+	 * <?php } */ ?>
+	</tbody>
+</table>
+
+
+<table class="layui-table" lay-size="sm">
+	<colgroup>
+		<col width="200">
+		<col width="150">
+		<col width="150">
+		<col>
+	</colgroup>
+	<thead>
+	<tr>
+		<th>Swoole Table</th>
+		<th>表长度</th>
+		<th>占用长度</th>
+		<th>占用内存</th>
+	</tr>
+	</thead>
+	<tbody>
+	<?php foreach ($_ENV['table'] as $k => $row) { ?>
+		<?php if ($row instanceof swoole_table) { ?>
+			<tr>
+				<td><?= $k ?></td>
+				<td><?= $row->size ?></td>
+				<td><?= $row->count() ?></td>
+				<td><?php echo humansize($row->memorySize) ?></td>
+			</tr>
+
+		<?php } ?>
+	<?php } ?>
+	</tbody>
+</table>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title><?php echo _CONF('site_name') ?>管理</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="../../layui/css/layui.css?ver=<?php echo _CONF('app_v') ?>" media="all">
+	<link rel="stylesheet" href="../../css/global.css?ver=<?php echo _CONF('app_v') ?>" media="all">
+	<link rel="stylesheet" href="../../css/jquery.contextMenu.css?ver=<?php echo _CONF('app_v') ?>" media="all">
+	<link rel="stylesheet" href="../../ztree/css/zTreeStyle/zTreeStyle.css?ver=<?php echo _CONF('app_v') ?>"
+		  media="all">
+	<script>
+        var tablse = true;
+        var error_url = '../../<?=$__DIR__?>/index/login';
+        var user = {};
+        var top_px = 0;
+	</script>
+
+	<style>
+		.layui-form-label {
+			width: 120px;
+		}
+
+		.layui-input-block {
+			margin-left: 160px;
+		}
+
+		.layui-layer-content {
+			padding: 5px !important;
+		}
+
+		.layui-layer-padding {
+			padding: 20px 20px 20px 55px !important;
+		}
+
+		.layui-layout-admin .layui-footer {
+			left: 180px
+		}
+
+		.hide {
+			display: none
+		}
+
+		.layui-tab-title li {
+			min-width: 50px;
+			padding: 0 18px;
+		}
+
+		.layui-nav .layui-nav-item a {
+			padding: 0 18px;
+		}
+
+		.layui-table, .layui-table-view {
+			margin-top: 0
+		}
+
+		.layui-table-cell {
+			padding: 0 15px
+		}
+
+		.layui-btn-group {
+			display: flex !important;
+		}
+
+		.layui-btn-group .layui-btn {
+			flex: 1 !important;;
+		}
+
+		.layui-btn-group .layui-btn-primary {
+			border: none;
+		}
+
+		.layui-btn-group .layui-btn + .layui-btn {
+			margin-left: 0px;
+		}
+
+		.uploadbutton {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			top: 0
+		}
+
+		.layui-form-item {
+			margin-bottom: 10px;
+			clear: both;
+		}
+
+		.layui-tab-content {
+			overflow: hidden;
+			overflow-y: scroll;
+			width: auto;
+			box-sizing: border-box;
+		}
+
+		.layui-tab-content .layui-main {
+			margin: 5px;
+			width: auto;
+		}
+
+		[lay-size=sm] .layui-input {
+			height: 30px;
+			line-height: 30px
+		}
+
+		[lay-size=sm] .layui-btn {
+			height: 30px;
+			line-height: 30px
+		}
+
+		.layui-form[lay-size=sm] .layui-form-selected dl {
+			top: 34px
+		}
+
+		.layui-table-view .layui-table[lay-size=sm] .layui-btn-sm {
+			height: 24px;
+			line-height: 24px;
+		}
+
+		.layui-table-view .layui-table td {
+			padding: 2px 0;
+		}
+
+		.layui-table-view .layui-table[lay-size=sm] .layui-table-cell {
+			height: 26px;
+			line-height: 26px;
+		}
+
+		.layui-table-view .layui-table .layui-table-cell {
+			padding: 0 4px;
+		}
+
+		.coverBg {
+			background-position: center center;
+			background-size: cover;
+			background-repeat: no-repeat;
+		}
+
+		.layui-tab .tab-bg {
+			position: absolute;
+			width: 100%;
+			top: 0;
+			left: 0;
+			height: 40px;
+			border-bottom: 1px solid #E2E2E2;
+			background: #FAFAFA;
+		}
+
+		.layui-tab .tab-prev {
+			position: absolute;
+			left: 0;
+			height: 41px;
+			top: 0;
+			z-index: 99;
+			width: 39px;
+			text-align: center;
+			background: #fff;
+			border-right: 1px solid #E2E2E2;
+			color: #009688;
+		}
+
+		.layui-tab .tab-next {
+			position: absolute;
+			right: 0;
+			height: 41px;
+			top: 0;
+			z-index: 99;
+			width: 39px;
+			text-align: center;
+			background: #fff;
+			border-left: 1px solid #E2E2E2;
+			color: #009688;
+		}
+
+		.closeBox {
+			position: absolute;
+			right: 0;
+			background-color: #fff !important;
+			color: #000;
+			border-left: 1px solid #e2e2e2;
+			border-bottom: 1px solid #e2e2e2;
+		}
+
+		.closeBox .layui-nav-item {
+			line-height: 32px;
+		}
+
+		.layui-tab {
+			margin: 0 !important;
+		}
+
+		.layui-tab-brief > .layui-tab-more li.layui-this:after, .layui-tab-brief > .layui-tab-title .layui-this:after {
+			border-bottom: 2px solid #0ae;
+		}
+
+		.layui-layout-admin .layui-header {
+			background-color: #108ee9;
+		}
+
+		.layui-side {
+			background-color: #344058 !important;
+		}
+
+	</style>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+	<div class="layui-header header header-demo">
+		<div class="layui-main">
+			<div class="logo" style="color:#fff;font-size:1.2rem;width:160px;"><i class="layui-icon layui-icon-rmb"
+																				  style="padding:0px; font-size:1.2rem; color:#fff ">
+					<!--&#xe653;--></i>&nbsp;&nbsp;<?php echo _CONF('site_name') ?></div>
+			<ul id="menu-top" class="layui-nav" style="z-index:999999;"></ul>
+		</div>
+	</div>
+	<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+	<!--[if lt IE 9]>
+	<script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	<script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<div class="layui-side " style="width:190px;">
+		<div class="layui-side-scroll" style="width:190px">
+			<ul id="menu-left" style="width:180px" class="layui-nav layui-nav-tree site-demo-nav"></ul>
+		</div>
+	</div>
+
+	<div class="layui-xbody site-demo" id="admin-body">
+		<div class="layui-tab layui-tab-brief" id="LAY_app_tabs" lay-filter="admin-tab" style="margin:0;"
+			 lay-allowClose="true">
+			<ul class="layui-tab-title site-demo-title" id="admin-tab-title"
+				style="overflow:visible;z-index:999;display: block;background-color:#FFF"></ul>
+			<div class="layui-tab-content layui-body" id="layui-body" style="top:105px;padding:0;left:190px;"></div>
+		</div>
+		<div style="padding: 15px;"></div>
+	</div>
+
+	<div class="layui-footer footer footer-demo">
+		<div class="layui-main">
+			<p>&copy; 最后启动 <?php echo date('Y-m-d H:i:s', filectime($this->server->pidFile)); ?></p>
+			<p>当前系统时间 <span id="d"><?php echo date('Y-m-d H:i:s') ?></span></p>
+			<p>Debug <?php echo _CONF('debug') == true ? 'true' : 'false' ?></p>
+		</div>
+	</div>
+
+	<div class="site-tree-mobile layui-hide">
+		<i class="layui-icon">&#xe602;</i>
+	</div>
+	<div class="site-mobile-shade"></div>
+</div>
+<script type="text/html" id="table_tpl">
+	{{#  layui.each(d, function(index, item){ }}
+	<tr>
+		<td>{{item.k}}</td>
+		<td style="text-align:right">{{item.v}}</td>
+	</tr>
+	{{# }) }}
+</script>
+
+
+<script id="top_menu_tpl" type="text/html">
+	{{#  layui.each(d, function(index, item){ }}
+	{{#if (item.sub){ }}
+	<li data-menu="m-{{ laytpl.rep_node(item.node) }}" class="layui-nav-item layui-hide-xs"><a href="javascript:;">{{
+			item.name }}</a></li>
+	{{# }else{ }}
+	<li data-open="tab-{{ laytpl.rep_node(item.node) }}" data-url="../../{{ item.node }}"
+		class="layui-nav-item layui-hide-xs"><a href="javascript:;">{{ item.name }}</a></li>
+	{{# } }}
+	{{#  }); }}
+	<li class="layui-nav-item">
+		<a href="javascript:;">{{userinfo.username}}</a>
+		<dl class="layui-nav-child">
+			<dd><a href="../../" target="_blank">站点首页</a></dd>
+			<dd><a data-layer="prompt" data-field="password" data-action="../../<?= $__DIR__ ?>/user/password"
+				   data-title="请输入新密码" href="javascript:;">修改密码</a></dd>
+			<dd><a href="../../<?= $__DIR__ ?>/index/logout">退了</a></dd>
+		</dl>
+	</li>
+</script>
+<script id="top_left_tpl" type="text/html">
+	{{#  layui.each(d, function(index, item){ }}
+	{{#if (item.sub ){ }}
+	{{#  layui.each(item.sub, function(cindex, citem){ }}
+	<li class="layui-nav-item layui-nav-itemed" style="display:none" data-menu-node='m-{{ laytpl.rep_node(item.node) }}'
+		data-menu="m-{{ laytpl.rep_node(item.node) }}">
+		{{#if (citem.sub){ }}
+		<a class="" href="javascript:;">{{ citem.name }}</a>
+		<dl class="layui-nav-child">
+			{{# layui.each(citem.sub, function(ccindex, ccitem){ }}
+			<dd><a data-open="tab-{{ laytpl.rep_node(ccitem.node) }}" data-url="../../{{ ccitem.node }}"
+				   href="javascript:;">{{ ccitem.name }}</a></dd>
+			{{# }); }}
+		</dl>
+		{{# }else{ }}
+		<a data-open="tab-{{ laytpl.rep_node(citem.node) }}" data-url="../../{{ citem.node }}" href="javascript:;">{{
+			citem.name }}</a>
+		{{# } }}
+	</li>
+	{{#  }); }}
+	{{# } }}
+	{{#  }); }}
+	<li class="layui-nav-item" style="height: 30px; text-align: center"></li>
+</script>
+<script>
+    var nowTime;
+
+    function play() {
+        var time = new Date();
+        nowTime = time.getFullYear() + "-" + (time.getMonth() + 1 < 10 ? "0" + (time.getMonth() + 1) : time.getMonth() + 1) + "-" + (time.getDate() < 10 ? "0" + time.getDate() : time.getDate()) + " " + (time.getHours() < 10 ? "0" + time.getHours() : time.getHours()) + ":" + (time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes()) + ":" + (time.getSeconds() < 10 ? "0" + time.getSeconds() : time.getSeconds());
+        document.getElementById("d").innerHTML = nowTime;
+    }
+
+    setInterval(play, 1000);
+</script>
+<script src="../../layui/layui.all.js?ver=<?php echo _CONF('app_v') ?>"></script>
+<script>
+    layui.config({
+        base: '/layui/plugin/'
+    }).extend({
+        tableSelect: 'tableSelect/tableSelect',
+        iconPicker: 'iconPicker/iconPicker',
+        xmSelect: 'xmSelect/xmSelect',
+    });
+    var $ = layui.jquery, element = layui.element, layim = layui.layim, tree = layui.tree, code = layui.code, device = layui.device,
+        layer = layui.layer, form = layui.form, table = layui.table, laydate = layui.laydate, laytpl = layui.laytpl,
+        upload = layui.upload, userinfo = [],tableSelect,iconPicke,xmSelectr;
+    layui.use(['tableSelect','iconPicker','xmSelect'], function () {
+        tableSelect=layui.tableSelect;
+        iconPicker=layui.iconPicker;
+        xmSelect=layui.xmSelect;
+    });
+</script>
+<script type="text/javascript" src="../../js/qrcode.js?ver=<?php echo _CONF('app_v') ?>"></script>
+<script type="text/javascript" src="../../js/notify.min.js?ver=<?php echo _CONF('app_v') ?>"></script>
+<script type="text/javascript" src="../../js/echarts.min.js?ver=<?php echo _CONF('app_v') ?>"></script>
+<script type="text/javascript" src="../../ztree/jquery.ztree.core.min.js?ver=<?php echo _CONF('app_v') ?>"></script>
+<script type="text/javascript" src="../../ztree/jquery.ztree.excheck.min.js?ver=<?php echo _CONF('app_v') ?>"></script>
+<script type="text/javascript" src="../../ztree/jquery.ztree.exedit.min.js?ver=<?php echo _CONF('app_v') ?>"></script>
+
+<script src="/js/global.js?ver=<?php echo _CONF('app_v') ?>"></script>
+<script src="/js/index.js?ver=<?php echo _CONF('app_v') ?>"></script>
+<script src="/js/jquery.contextMenu.min.js?ver=<?php echo _CONF('app_v') ?>"></script>
+
+<!--{hook zxadmin_index_js.htm}-->
+
+<script>
+    userinfo =<?php echo xn_json_encode($this->User->user_safe_info($this->token))?>;
+    var index_load = layer.load(2, {
+        shade: [0.1, '#fff'] //0.1透明度的白色背景
+    });
+    if (document.body.clientWidth < 750) {
+        tablse = false;
+        $('#admin-tab-title').hide();
+    }
+    $.xget('../../<?=$__DIR__?>/menu/user', function (e) {
+        layer.close(index_load);
+        setTimeout(function () {
+            var top_menu_tpl = $('#top_menu_tpl').html();
+            laytpl(top_menu_tpl).render(e.data, function (html) {
+                $('#menu-top').html(html);
+            });
+            var top_left_tpl = $('#top_left_tpl').html();
+            laytpl(top_left_tpl).render(e.data, function (html) {
+                $('#menu-left').html(html);
+            });
+
+            var top = $('#menu-top').find('.layui-nav-item:first');
+            var m = top.attr('data-menu');
+            element.init();
+            top.click();
+        }, 200);
+    });
+</script>
+</body>
+</html>

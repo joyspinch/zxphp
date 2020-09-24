@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title><?=_CONF('site_name')?>在线客服</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1，minimum-scale=1, user-scalable=no">
+	<link rel="stylesheet" href="../../layui/css/layui.css">
+	<link rel="stylesheet" href="../../customer/css/link.cli.v2.css">
+	<link rel="stylesheet" href="../../common/js/jqueryWeui/weui.min.css">
+	<link rel="stylesheet" href="../../common/js/jqueryWeui/jquery-weui.min.css">
+	<link rel="stylesheet" href="../../common/css/iconfont.css">
+</head>
+<body <?php if ($type == 2 && $os == 'p'){ ?>style="background:#eee"<?php } ?>>
+<div class="chat-container" id="app" <?php if($type == 2 && $os == 'p'){ ?>style="position:relative;top: 50px;width: 768px;height:600px;margin:0 auto;box-shadow: 0 0 3px 3px rgba(23,94,103,.15); "<?php } ?>>
+	<div class="layui-row chat-header">
+		<div class="<?php if($type == 2 && $os == 'p'){?>layui-col-xs1<?php }else{ ?>layui-col-xs2<?php } ?> chat-header-avatar">
+			<img src="../../common/images/kefu.png" class="agent-avatar"/>
+		</div>
+		<div class="<?php if($type == 2 && $os == 'p'){?>layui-col-xs10<?php }else{ ?>layui-col-xs9<?php } ?> chat-header-title">
+			<?php echo $robot_open==1 ? $robot_title:'客服为您服务'?>
+		</div>
+		<?php if ($type == 1){ ?>
+			<div class="layui-col-xs1 chat-header-tool" id="closeBtn">
+				<i class="layui-icon layui-icon-down"></i>
+			</div>
+		<?php }elseif($type == 2){ ?>
+			<div class="layui-col-xs1 chat-header-tool" id="operatorVoice">
+				<span class="iconfont" style="font-size: 20px" id="openVoice">&#xe69f;</span>
+				<span class="iconfont" style="font-size: 20px;display: none" id="closeVoice">&#xe69d;</span>
+			</div>
+		<?php } ?>
+	</div>
+	<div class="layui-row chat-body" >
+		<div class="chat-box">
+
+		</div>
+	</div>
+	<div class="layui-row chat-footer">
+		<div class="text-holder">
+			<textarea id="textarea" placeholder="请输入内容" onblur="window.scroll(0, 0)"></textarea>
+		</div>
+		<div class="send-bar">
+			<div class="tool-box">
+				<i class="layui-icon layui-icon-face-smile" id="face"></i>
+				<i class="layui-icon layui-icon-picture" id="image"></i>
+				<i class="layui-icon" style="font-size: 20px;" id="file" title="文件">&#xe61d;</i>
+				<span class="staff-service">转人工</span>
+			</div>
+			<div class="send-btn-div">
+				<input type="button" value="发送" class="send-input" id="sendBtn">
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<script>
+    var webim = {
+        'server': 'ws://xcx.wolahuo.com'
+    };
+
+</script>
+<script src="../../common/js/jquery.min.js"></script>
+<script src="../../common/js/jqueryWeui/jquery-weui.min.js"></script>
+<script src="../../layui/layui.js"></script>
+
+<script src="../../js/websocket/websocket.js"></script>
+<script>
+    socket = new ReconnectingWebSocket(webim.server, null, {maxReconnectAttempts: 10, timeoutInterval: 3000});
+
+    socket.onopen = function (res) {
+        console.log("链接成功");
+        // 兼容断网
+        $("#sendBtn").addClass('active');
+        openint = setInterval(function () {
+            socket.send(JSON.stringify({
+                cmd: "ping"
+            }))
+        }, 20000);
+        socket.send('{"cmd":"userGeoJoin","data":{"uid":"ZcL0BH6R4pE_3d","longitude":113.93041,"latitude":22.53332,"openid":"ouqkM0VjtXHHLSjg8_lzm2b7oBdI"}}');
+    };
+
+    socket.onclose = function (err) {
+        console.log("断开连接");
+        clearInterval(openint);
+        $("#sendBtn").removeClass('active');
+    };
+
+    socket.onmessage = function (res) {
+      console.log(res)
+    };
+
+    $('#sendBtn').click(function (e) {
+        var str = $('#textarea').val();
+		socket.send('{"cmd":"sendMessage","data":{"content":"'+str+'","to_id":"MjeavdxMSuQ_3d"}}');
+    })
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+
+<div style="margin-top:10px;">
+    <table class="layui-hide" id="<?php echo $__PRE__?>table" lay-filter="<?php echo $__PRE__?>table"></table>
+</div>
+
+<script>
+
+    var  <?php echo $__PRE__?>table = table.render({
+        elem: '#<?php echo $__PRE__?>table'
+        ,url:'../../<?=$__DIR__?>/role/index'
+        ,page: true
+        ,height: 'full-220'
+        ,limits: [10,15,20,50,100,200]
+        ,cols: [[
+            {field:'role_id', title:'ID', width:80, unresize: true, sort: true}
+            ,{field:'role_name', title:'组名称', width:140, edit: 'text'}
+            ,{field:'desc', title:'简介', minWidth:200, edit: 'text'}
+            ,{field:'status', title:'状态', width:80,templet:function (d) {
+                    return " <input type=\"checkbox\" name=\"status\" "+(d.role_id ==1 ? 'disabled':'')+" value=\""+d.role_id+"\" lay-skin=\"switch\" lay-text=\"启用|禁用\" lay-filter=\"<?php echo $__PRE__?>status\" "+(d.status == 1 ? 'checked' : '' )+">"
+             }}
+            ,{field:'doit', title:'操作', width:140,templet:function (d) {
+                    if(d.role_id ==1){return ''}
+                    return "<div class='layui-btn-group'><button lay-event='edit' class='layui-btn layui-btn-sm'>编辑权限</button><button lay-event='delete' class='layui-btn layui-btn-sm layui-btn-primary'>删除</button></div>"
+             }}
+        ]]
+        ,response: {
+            statusCode: "0000"
+        }
+        ,parseData: function(res){
+            return {
+                "code": res.resp_code,
+                "msg": res.msg,
+                "count": res.total,
+                "data": res.results
+            };
+        }
+    });
+
+    table.on('sort(<?php echo $__PRE__?>table)', function(obj){
+        <?php echo $__PRE__?>table.reload({
+            initSort: obj
+            ,where: {
+                field: obj.field
+                ,order: obj.type
+            }
+        });
+    });
+    table.on('tool(<?php echo $__PRE__?>table)', function(obj){
+        var data = obj.data;
+        var layEvent = obj.event;
+        var tr = obj.tr;
+
+        if(layEvent === 'delete'){
+            layer.confirm('真的删除'+data.role_name+'组吗？',{title:'删除确认'}, function(index){
+                $.xdelete('../../<?=$__DIR__?>/role/index',{role_id:data.role_id},function (e) {
+                    layer.msg(e.msg)
+                    obj.del();
+                });
+            });
+        } else if(layEvent === 'edit'){
+
+            layer.open({
+                type: 1,
+                title:data.role_name+'组权限设置',
+                area: ['650px', '500px'],
+                btn:['保存','取消'],
+                closeBtn: 0,
+                maxmin: true,
+                content: '<form class="layui-form"><input type="hidden" name="role_id" value="'+data.role_id+'">\n' +
+                '<div id="<?php echo $__PRE__?>xtree" style="width:430px;"></div>\n' +
+                '<button style="display:none" class="layui-btn" lay-submit lay-filter="<?php echo $__PRE__?>save_menu" id="<?php echo $__PRE__?>save_menu">保存</button></form>',yes:function (e) {
+                        $('#<?php echo $__PRE__?>save_menu').click();
+                }
+            });
+
+            form.on('submit(<?php echo $__PRE__?>save_menu)', function(data){
+                data.field.node= tree.getChecked('<?php echo $__PRE__?>xtree');
+                $.xpost('../../<?=$__DIR__?>/roleauth',data.field,function (e) {
+                    layer.msg(e.msg)
+                })
+                return false;
+            });
+
+
+            $.xget('../../<?=$__DIR__?>/roleauth?role_id='+data.role_id,function (e) {
+
+                tree.render({
+                    elem: '#<?php echo $__PRE__?>xtree'  //绑定元素
+                    ,showCheckbox:true
+                    //,onlyIconControl:true
+                    ,data:e.data
+					,id:'<?php echo $__PRE__?>xtree'
+                });
+            });
+        }
+    });
+
+    form.on('switch(<?php echo $__PRE__?>status)', function(obj){
+        $.xpost('../../<?=$__DIR__?>/role/status',{role_id:this.value,status:obj.elem.checked==true?1:0},function (e) {
+            if(e.resp_code=='0000'){
+                layer.tips(e.msg, obj.othis,{tips: [4, '#393D49']});
+            }else{
+                if(obj.elem.checked==true){
+                    obj.elem.checked=false
+                    $(obj.othis).removeClass("layui-form-onswitch").find('em').text('禁用');
+                }else{
+                    obj.elem.checked=true
+                    $(obj.othis).addClass("layui-form-onswitch").find('em').text('启用');
+                }
+            }
+        })
+    });
+
+    table.on('edit(<?php echo $__PRE__?>table)', function(obj){
+        $.xpost('../../<?=$__DIR__?>/role/field',{role_id:obj.data.role_id,field: obj.field,value:obj.value},function (e) {
+            if(e.resp_code=='0000'){
+                layer.msg(e.msg);
+            }else{
+                if(obj.elem.checked==true){
+                    obj.elem.checked=false
+                    $(obj.othis).removeClass("layui-form-onswitch").find('em').text('禁用');
+                }else{
+                    obj.elem.checked=true
+                    $(obj.othis).addClass("layui-form-onswitch").find('em').text('启用');
+                }
+            }
+        })
+    });
+
+
+    form.on('submit(<?php echo $__PRE__?>search_submit)', function(data){
+        <?php echo $__PRE__?>table.reload({
+            where: data.field
+        });
+        form.val("<?php echo $__PRE__?>search_form",data.field);
+        return false;
+    });
+    form.render();
+</script>

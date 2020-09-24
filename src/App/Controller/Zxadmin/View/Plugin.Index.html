@@ -1,0 +1,102 @@
+<style>
+   tbody .layui-table-cell{height:unset;line-height:unset}
+</style>
+<blockquote class="layui-elem-quote">
+    <form class="layui-form" lay-filter="<?php echo $__PRE__?>search_form" style="float:right;text-align:right">
+        <div class="layui-form-item">
+            <div class="layui-input-inline" style="width:150px">
+                <input class="layui-input" name="name" placeholder="插件名称" autocomplete="off">
+            </div>
+            <div class="layui-input-inline" style="width:100px">
+                <select class="layui-input" name="install" autocomplete="off">
+                    <option value="">请选择</option>
+                    <option value="2">已安装</option>
+                    <option value="1">未安装</option>
+                </select>
+            </div>
+            <div class="layui-input-inline" style="width:100px">
+                <select class="layui-input" name="disable" autocomplete="off">
+                    <option value="">请选择</option>
+                    <option value="2">启用</option>
+                    <option value="1">禁用</option>
+                </select>
+            </div>
+            <div class="layui-input-inline" style="width:70px"><button type="button" class="layui-btn" lay-submit lay-filter="<?php echo $__PRE__?>search_submit">搜索</button></div>
+        </div>
+    </form>
+
+    插件安装卸载请前往 <a class="layui-btn layui-btn-sm" data-open="tab-admin-other-cache" data-url="../../<?=$__DIR__?>/other/cache" href="javascript:;">清理缓存</a> 重载进程 ,注意重载进程尽量避免频繁操作！
+</blockquote>
+<div class="layui-clear"></div>
+<table class="layui-hide" id="<?php echo $__PRE__?>table" lay-filter="<?php echo $__PRE__?>table"></table>
+
+
+<script type="text/html" id="<?php echo $__PRE__?>bar">
+    <div>
+        <div class="layui-btn-group">
+         {{# if (d.installed==1){ }}
+            {{# if (d.enable==1){ }}
+            {{# if (d.setting_url){ }}
+            <a class="layui-btn layui-btn-sm" data-open="tab-{{ laytpl.rep_node(d.setting_url) }}" data-url="../../{{d.setting_url}}" href="javascript:;">设置</a>
+            {{# } }}
+            <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="disable">禁用</a>
+            {{# }else{ }}
+            <a class="layui-btn layui-btn-normal layui-btn-sm" lay-event="enable">启用</a>
+            {{# } }}
+         {{# }else{ }}
+            <a class="layui-btn layui-btn-sm" lay-event="install">安装</a>
+         {{# } }}
+        </div>
+    </div>
+</script>
+
+<script>
+
+    var  <?php echo $__PRE__?>table = table.render({
+        elem: '#<?php echo $__PRE__?>table',
+        id: '#<?php echo $__PRE__?>table'
+        ,url:'../../<?=$__DIR__?>/plugin/index'
+        ,page: false
+        ,height: 'full-240'
+        ,cols: [[
+            {title:'序号', width:60, type:"numbers"}
+            ,{field:'icon_url', title:'图标', width:105,style:"height:95px;min-height:94px;line-height:94px;padding:2px 0;vertical-align:middle;text-align:center", templet:function (d) {
+                    return "<img src="+d.icon_url+" width=90 height=90>";
+                }}
+            ,{field:'name', title:'插件名称', minwidth:300,style:"text-align:left;vertical-align:top;",templet:function (d) {
+                    return "<div style='font-size:16px;margin-bottom:10px'>"+d.name+"</div><div style='width:100%;line-height:20px;height:60px;white-space:normal;word-break:break-all;word-wrap:break-word;overflow-y:auto;overflow-x:hidden'>"+d.brief+"</div>"
+                }}
+            ,{field:'version', title:'其他信息', width:140,style:"text-align:left;vertical-align:top;",templet:function (d) {
+                    return "<div>版本："+d.version+"</div><div>目录："+d.dir+"</div><div style='color:#"+(d.installed==1?'5FB878':'FF5722')+"'>状态："+(d.installed==1?'已安装':'未安装')+"</div>"
+                }}
+            ,{field:'installed', title:'操作', width:100, toolbar : '#<?php echo $__PRE__?>bar'}
+        ]]
+        ,response: {
+            statusCode: "0000"
+        }
+        ,parseData: function(res){
+            return {
+                "code": res.resp_code,
+                "msg": res.msg,
+                "data": res.data
+            };
+        }
+    });
+
+    table.on('tool(<?php echo $__PRE__?>table)', function(obj){
+        var data = obj.data;
+        var layEvent = obj.event;
+        $.xget('../../<?=$__DIR__?>/plugin/'+layEvent+'?dir='+data.dir,function (e) {
+            layer.msg('操作成功');
+            <?php echo $__PRE__?>table.reload()
+        })
+    });
+
+    form.on('submit(<?php echo $__PRE__?>search_submit)', function(data){
+        <?php echo $__PRE__?>table.reload({
+            where: data.field
+        });
+        return false;
+    });
+    form.render();
+</script>

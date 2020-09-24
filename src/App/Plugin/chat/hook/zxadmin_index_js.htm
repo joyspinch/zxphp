@@ -1,0 +1,39 @@
+
+<?php if ($this->http_server->setting['open_websocket_protocol']) { ?>
+<script>
+    var webim = {
+        'server': 'ws:<?php echo $this->request->_S('HOST') ?>'
+    };
+</script>
+<script src="../../js/websocket/websocket.js?ver=<?php echo _CONF('app_v') ?>"></script>
+<script src="/admin/chat.js?ver=<?php echo _CONF('app_v') ?>"></script>
+
+<script>
+
+    layim.config({
+        title:userinfo.username,
+        init:{
+            url: '../../<?=$__DIR__?>/chat/members' //接口地址（返回的数据格式见下文）
+        }
+        ,uploadImage: {
+            url: '../../<?=$__DIR__?>/chat/imageupload'
+        }
+        ,uploadFile: {
+            url: '../../<?=$__DIR__?>/chat/fileupload'
+        }
+        ,tool: [{
+            alias: 'code' //工具别名
+            ,title: '代码' //工具名称
+            ,icon: '&#xe64e;' //工具图标，参考图标文档
+        }]
+        ,right:"5px"
+        ,bottom:"5px"
+        ,notice:true
+        ,isgroup:false
+        ,msgbox: '../../<?=$__DIR__?>/chat/msgbox' //消息盒子页面地址，若不开启，剔除该项即可
+        ,chatLog: '../../<?=$__DIR__?>/chat/chatlog' //聊天记录页面地址，若不开启，剔除该项即可
+        ,copyright:true
+    });
+</script>
+
+<?php } ?>

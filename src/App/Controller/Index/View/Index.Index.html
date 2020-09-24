@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+	<title><?=_CONF('site_name')?></title>
+</head>
+<body>
+<div style="margin:12rem auto;text-align:center">
+	<h1 style="font-size:48px">Swoole + ZxPHP</h1>
+	<p style="margin-top:3rem;font-size:28px">高性能的超轻量级PHP常驻框架</p>
+	<span style="font-size:18px">开箱即用Swoole，为WEB、API开发而生</span><br/>
+	<span style="font-size:16px">轻量级，封装简单易懂，能够快速上手使用</span><br/>
+	<span style="font-size:16px">高性能，框架响应时间在1ms以内，单机qps轻松上3000</span><br/><br/>
+	<span style="font-size:13px">ZxPHP v<?=__VERSION__?> , Swoole v<?=SWOOLE_VERSION?> , PHP v<?=PHP_VERSION?></span><br/>
+	<span style="font-size:13px">Use Time: <?=ut($this->request->starttime)?>&nbsp;&nbsp;&nbsp;&nbsp;Use Memory: <?=um($this->request->startmemory)?></span>
+</div>
+
+</body>
+</html>

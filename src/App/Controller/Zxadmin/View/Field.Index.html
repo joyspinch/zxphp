@@ -1,0 +1,142 @@
+<div class="layui-tab layui-tab-brief" lay-filter="<?php echo $__PRE__ ?>tab">
+	<ul class="layui-tab-title">
+		<?php
+		$tabs = [];
+		for ($i = 0; $i < 5; $i++) {
+			$x = $i > 0 ? $i : '';
+			if (!empty($_ENV['conf']['db' . $x])) {
+				$tabs[] = ['name' => $_ENV['conf']['db' . $x]['database_name'], 'k' => 'db' . $x];
+			}
+		}
+		foreach ($tabs as $v) {
+			echo '<li lay-id="' . $v['k'] . '">' . $v['name'] . '</li>';
+		}
+		?>
+		<button style="margin-left:5px" class="layui-btn layui-btn-sm" id="<?php echo $__PRE__ ?>_backend">备份数据</button>
+	</ul>
+	<div style="margin-top:10px">
+		<table class="layui-hide" id="<?php echo $__PRE__ ?>table" lay-filter="<?php echo $__PRE__ ?>table"></table>
+	</div>
+</div>
+
+
+<script type="text/html" id="<?php echo $__PRE__ ?>bar">
+	<div class="layui-btn-group">
+		{{# if(!d.ismodel){ }}
+		<a class="layui-btn layui-btn-sm " lay-event="add">创建Model</a>
+		{{# }else{ }}
+		<a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="edit">查看Model</a>
+		{{# } }}
+		<a class="layui-btn layui-btn-sm layui-btn-primary" lay-event="detail">结构</a>
+	</div>
+</script>
+
+<script type="text/html" id="<?php echo $__PRE__ ?>edit_form_tpl">
+	<div>
+		<table class="layui-hide" id="<?php echo $__PRE__ ?>_edit_table" lay-filter="<?php echo $__PRE__ ?>_edit_table"></table>
+	</div>
+
+</script>
+<script>
+
+
+    $('#<?php echo $__PRE__?>_backend').on('click', function () {
+        layer.open({
+            type: 1,
+            title:'数据备份',
+            area: ['650px', '500px'],
+            btn: ['备份 LINK->'+thisdb, '取消'],
+            closeBtn: 0,
+            maxmin: true,
+            shade: 0.8,
+            btnAlign: 'c',
+            moveType: 1,
+            content: '<div>开发中 ^_^</div>',
+            yes:function (e) {
+               layer.msg('save')
+            }
+        });
+    });
+
+
+    var thisdb = '<?=$tabs[0]['k']?>';
+    element.tabChange('<?php echo $__PRE__?>tab', thisdb);
+    element.on('tab(<?php echo $__PRE__?>tab)', function (data) {
+        thisdb = $(this).attr('lay-id');
+		<?php echo $__PRE__?>table.reload({
+            where: {dblink: thisdb}
+        });
+    });
+
+    var <?php echo $__PRE__?>table = table.render({
+        elem: '#<?php echo $__PRE__?>table'
+        , url: '../../<?=$__DIR__?>/field/index'
+        , height: 'full-220'
+        , cols: [[
+            {type: 'numbers', title: '序号', width: 60}
+            , {field: 'Name', title: '数据表', width: 240}
+            , {field: 'Engine', title: 'Engine', width: 90}
+            , {field: 'Collation', title: '编码', width: 160}
+            , {field: 'Rows', title: '行数', width: 100}
+            , {field: 'Data_length', title: '表尺寸', width: 100}
+            , {field: 'Index_length', title: '索引长', width: 100}
+            , {field: 'Comment', title: '描述', minWidth: 300}
+            , {field: 'do', title: '操作', width: 160, toolbar: "#<?php echo $__PRE__?>bar"}
+        ]]
+        , response: {
+            statusCode: "0000"
+        }
+        , parseData: function (res) {
+            return {
+                "code": res.resp_code,
+                "msg": res.msg,
+                "data": res.data
+            };
+        }
+    });
+
+    table.on('tool(<?php echo $__PRE__?>table)', function (obj) {
+        var data = obj.data;
+        var layEvent = obj.event;
+        var tr = obj.tr;
+
+        if (layEvent === 'add') { //创建
+
+        } else if (layEvent === 'edit') { //编辑
+
+        } else if (layEvent === 'detail') { //查看
+            layer.open({
+                type: 1,
+                title: data.Name + " 表结构",
+                area: ['760px', '600px'],
+                content: $('#<?php echo $__PRE__?>edit_form_tpl').html(),
+                success: function (d) {
+                    var <?php echo $__PRE__?>table_detail = table.render({
+                        elem: '#<?php echo $__PRE__?>_edit_table'
+                        , url: '../../<?=$__DIR__?>/field/detail?dblink=' + thisdb + '&table=' + data.Name
+                        , height: '540px'
+                        , cols: [[
+                            {type: 'numbers', title: '序号', width: 60}
+                            , {field: 'Field', title: '字段', width: 150}
+                            , {field: 'Key', title: '索引', width: 60}
+                            , {field: 'Null', title: '允许空', width: 60}
+                            , {field: 'Type', title: '类型', width: 120}
+                            , {field: 'Comment', title: '备注', minWidth: 220}
+                        ]]
+                        , response: {
+                            statusCode: "0000"
+                        }
+                        , parseData: function (res) {
+                            return {
+                                "code": res.resp_code,
+                                "msg": res.msg,
+                                "data": res.data
+                            };
+                        }
+                    });
+
+                }
+            });
+        }
+    })
+</script>

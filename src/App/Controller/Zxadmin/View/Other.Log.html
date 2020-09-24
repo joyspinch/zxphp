@@ -1,0 +1,92 @@
+<form class="layui-form layui-form-pane" target="_blank"  lay-size="sm" lay-filter="<?php echo $__PRE__?>search_form" id="<?php echo $__PRE__?>search_form">
+<div class="layui-row layui-col-space10">
+
+    <div class="layui-col-xs6 layui-col-sm4 layui-col-md2 layui-col-lg2">
+            <select class="layui-input" id="<?php echo $__PRE__?>uid" name="uid" placeholder="操作账户" autocomplete="off" lay-search>
+                <option value="">请选择账户</option>
+            </select>
+        </div>
+
+        <div class="layui-col-xs6 layui-col-sm4 layui-col-md2 layui-col-lg1">
+            <div class="layui-btn-group">
+                <button type="button" class="layui-btn" lay-submit lay-filter="<?php echo $__PRE__?>search_submit">搜索</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="layui-clear"></div>
+<div style="margin-top:10px">
+    <table class="layui-hide" id="<?php echo $__PRE__?>table" lay-filter="<?php echo $__PRE__?>table"></table>
+</div>
+
+<script>
+    laydate.render({
+        elem: '#<?php echo $__PRE__?>search_creation_time'
+        ,range: true,
+        done: function(value, date, endDate){
+            $('#<?php echo $__PRE__?>search_creation_time').val(value);
+        }
+    });
+
+    var  <?php echo $__PRE__?>table = table.render({
+        elem: '#<?php echo $__PRE__?>table'
+        ,url:'../../<?=$__DIR__?>/other/log'
+        ,page: true
+        ,height: 'full-210'
+        ,limits: [10,15,20,50,100,200]
+        ,cols: [[
+            {field:'id', title:'ID', width:70},
+            {field:'name', title:'操作账户', width:120,templet:function (d) {
+                    return d.name +'('+d.account_id+')';
+                }}
+            ,{field:'out_trade_no', title:'操作内容', width:240}
+            ,{field:'creation_time', title:'操作时间', width:150,templet:function (d) {
+                    return laytpl.toDateString(d.creation_time*1000);
+                }}
+        ]]
+        ,response: {
+            statusCode: "0000"
+        }
+        ,parseData: function(res){
+            return {
+                "code": res.resp_code,
+                "msg": res.msg,
+                "count": res.data.total,
+                "data": res.data.list
+            };
+        }
+    });
+
+    table.on('sort(<?php echo $__PRE__?>table)', function(obj){
+        <?php echo $__PRE__?>table.reload({
+            initSort: obj
+            ,where: {
+                field: obj.field
+                ,order: obj.type
+            }
+        });
+    });
+
+
+
+    $.xget('../../<?=$__DIR__?>/user/option',function (e) {
+        var option = '<option value="">请选择用户</option>';
+        for (var i in e.data){
+            option+='<option value="'+e.data[i].id+'">'+e.data[i].username+'('+e.data[i].id+')</option>';
+        }
+        $('#<?php echo $__PRE__?>uid').html(option);
+        form.render();
+    });
+
+
+
+    form.on('submit(<?php echo $__PRE__?>search_submit)', function(data){
+        <?php echo $__PRE__?>table.reload({
+            where: data.field
+        });
+        form.val("<?php echo $__PRE__?>search_form",data.field);
+        return false;
+    });
+    form.render();
+</script>
